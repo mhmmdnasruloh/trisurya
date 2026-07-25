@@ -1,0 +1,109 @@
+erDiagram
+    USERS ||--o{ CUSTOMERS : "creates"
+    USERS ||--o{ QUOTATIONS : "creates"
+    CUSTOMERS ||--o{ QUOTATIONS : "has"
+    QUOTATIONS ||--o{ QUOTATION_ITEMS : "contains"
+    PRODUCTS ||--o{ QUOTATION_ITEMS : "used_in"
+    QUOTATIONS ||--o{ INVOICES : "generates"
+    INVOICES ||--o{ DELIVERY_NOTES : "has"
+    INVOICES ||--o{ CASHFLOW : "creates_income"
+
+    USERS {
+        int id PK
+        string name
+        string email
+        string password
+    }
+
+    CUSTOMERS {
+        int id PK
+        string name
+        string phone
+        string email
+        string address
+        string city
+        string province
+        int created_by FK
+    }
+
+    PRODUCTS {
+        int id PK
+        string code
+        string name
+        text description
+        decimal price
+        int stock
+    }
+
+    QUOTATIONS {
+        int id PK
+        string number UK
+        int customer_id FK
+        int created_by FK
+        date date
+        date valid_until
+        decimal total
+        string status
+    }
+
+    QUOTATION_ITEMS {
+        int id PK
+        int quotation_id FK
+        int product_id FK
+        int quantity
+        decimal unit_price
+        decimal subtotal
+    }
+
+    INVOICES {
+        int id PK
+        string number UK
+        int quotation_id FK
+        date date
+        date due_date
+        decimal total
+        string status
+        text notes
+        boolean non_vat
+    }
+
+    DELIVERY_NOTES {
+        int id PK
+        string number UK
+        int invoice_id FK
+        date date
+        string status
+        string pic_name
+        string pic_phone
+        text shipping_address
+    }
+
+    CASHFLOW {
+        int id PK
+        date tanggal
+        string jenis "Income/Expense"
+        decimal nominal
+        string keterangan
+        string kategori
+        string sumber_dana
+    }
+
+    CONSUMABLE_STOCK {
+        int id PK
+        string nama
+        string unit
+        int quantity
+        decimal harga_satuan
+        date tanggal_input
+        string keterangan
+    }
+
+    FIXED_ASSETS {
+        int id PK
+        string nama
+        string kategori
+        decimal nilai_aset
+        date tanggal_perolehan
+        string kondisi
+        text keterangan
+    }
