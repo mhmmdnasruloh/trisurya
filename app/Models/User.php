@@ -72,6 +72,11 @@ class User extends Authenticatable
         return strtolower($this->role) === 'admin';
     }
 
+    public function isOwner()
+    {
+        return strtolower($this->role) === 'owner';
+    }
+
     public function isSales()
     {
         return strtolower($this->role) === 'sales';

@@ -51,11 +51,16 @@
                     </td>
                     <td class="py-3 px-4 text-center space-x-2">
                         <a href="{{ route('delivery_notes.show', $dn->id) }}" target="_blank" class="text-green-600 hover:underline font-medium">Cetak</a>
+                        @if(auth()->user()->hasFullAccess())
                         <a href="{{ route('delivery_notes.edit', $dn->id) }}" class="text-blue-600 hover:underline">Edit</a>
+                        @endif
+
+                        @if(auth()->user()->isOwner())
                         <form action="{{ route('delivery_notes.destroy', $dn->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button class="text-red-600 hover:underline" onclick="return confirm('Hapus surat jalan ini?')">Hapus</button>
                         </form>
+                        @endif
                     </td>
                 </tr>
                 @endforeach

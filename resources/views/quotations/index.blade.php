@@ -60,11 +60,16 @@
                     </td>
                     <td class="py-3 px-4 text-center space-x-2">
                         <a href="{{ route('quotations.show', $q->id) }}" target="_blank" class="text-green-600 hover:underline font-medium">Cetak</a>
+                        @if(auth()->user()->hasFullAccess())
                         <a href="{{ route('quotations.edit', $q->id) }}" class="text-blue-600 hover:underline">Edit</a>
+                        @endif
+
+                        @if(auth()->user()->isOwner())
                         <form action="{{ route('quotations.destroy', $q->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button class="text-red-600 hover:underline" onclick="return confirm('Hapus penawaran ini?')">Hapus</button>
                         </form>
+                        @endif
                     </td>
                 </tr>
                 @endforeach

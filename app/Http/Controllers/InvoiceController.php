@@ -85,6 +85,10 @@ class InvoiceController extends Controller
 
     public function edit(Invoice $invoice)
     {
+        if (!auth()->user()?->hasFullAccess()) {
+            abort(403, 'Hanya owner dan admin yang dapat mengedit invoice.');
+        }
+
         $quotations = Quotation::orderBy('id', 'desc')
             ->orderBy('date', 'desc')
             ->get();
@@ -93,6 +97,10 @@ class InvoiceController extends Controller
 
     public function update(Request $request, Invoice $invoice)
     {
+        if (!auth()->user()?->hasFullAccess()) {
+            abort(403, 'Hanya owner dan admin yang dapat mengubah invoice.');
+        }
+
         $request->validate([
             'quotation_id' => 'required',
             'date' => 'required|date',
@@ -113,6 +121,10 @@ class InvoiceController extends Controller
 
     public function destroy(Invoice $invoice)
     {
+        if (!auth()->user()?->isOwner()) {
+            abort(403, 'Hanya owner yang dapat menghapus invoice.');
+        }
+
         // Pembayaran terkait akan dihapus karena ON DELETE CASCADE di database
         // Cashflow yang sumbernya dari payment juga harus dihapus,
         // Tapi kita hapus cashflow yang terkait dengan invoice ini jika ada yang manual

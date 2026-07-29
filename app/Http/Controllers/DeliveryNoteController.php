@@ -72,6 +72,10 @@ class DeliveryNoteController extends Controller
 
     public function edit(DeliveryNote $deliveryNote)
     {
+        if (!auth()->user()?->hasFullAccess()) {
+            abort(403, 'Hanya owner dan admin yang dapat mengedit delivery order.');
+        }
+
         $invoices = Invoice::with('quotation.customer')
             ->orderBy('id', 'desc')
             ->orderBy('date', 'desc')
@@ -81,6 +85,10 @@ class DeliveryNoteController extends Controller
 
     public function update(Request $request, DeliveryNote $deliveryNote)
     {
+        if (!auth()->user()?->hasFullAccess()) {
+            abort(403, 'Hanya owner dan admin yang dapat mengubah delivery order.');
+        }
+
         $request->validate([
             'invoice_id' => 'required',
             'date' => 'required|date'
@@ -94,6 +102,10 @@ class DeliveryNoteController extends Controller
 
     public function destroy(DeliveryNote $deliveryNote)
     {
+        if (!auth()->user()?->isOwner()) {
+            abort(403, 'Hanya owner yang dapat menghapus delivery order.');
+        }
+
         $deliveryNote->delete();
         return back()->with('success', 'Surat Jalan berhasil dihapus.');
     }

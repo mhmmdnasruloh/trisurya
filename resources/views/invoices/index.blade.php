@@ -72,16 +72,22 @@
                     <td class="py-3 px-4 text-center space-x-2">
                         <a href="{{ route('invoices.show', $inv->id) }}" target="_blank" class="text-green-600 hover:underline font-medium block sm:inline">Cetak</a>
                         <a href="{{ route('payments.index', $inv->id) }}" class="text-indigo-600 hover:underline font-medium block sm:inline">Riwayat Bayar</a>
-                        
-                        @if(auth()->user()->hasFullAccess() || auth()->user()->isAdmin())
-                            @if(strtolower($inv->status) !== 'lunas' && strtolower($inv->status) !== 'dibatalkan')
-                            <a href="{{ route('payments.create', $inv->id) }}" class="text-blue-600 hover:underline font-medium block sm:inline whitespace-nowrap">Catat Bayar</a>
-                            @endif
-                            <a href="{{ route('invoices.edit', $inv->id) }}" class="text-blue-600 hover:underline block sm:inline">Edit</a>
-                            <form action="{{ route('invoices.destroy', $inv->id) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button class="text-red-600 hover:underline" onclick="return confirm('Hapus invoice ini?')">Hapus</button>
-                            </form>
+
+                        @if(auth()->user()->hasFullAccess())
+                        @if(strtolower($inv->status) !== 'lunas' && strtolower($inv->status) !== 'dibatalkan')
+                        <a href="{{ route('payments.create', $inv->id) }}" class="text-blue-600 hover:underline font-medium block sm:inline whitespace-nowrap">Catat Bayar</a>
+                        @endif
+                        @endif
+
+                        @if(auth()->user()->hasFullAccess())
+                        <a href="{{ route('invoices.edit', $inv->id) }}" class="text-blue-600 hover:underline block sm:inline">Edit</a>
+                        @endif
+
+                        @if(auth()->user()->isOwner())
+                        <form action="{{ route('invoices.destroy', $inv->id) }}" method="POST" class="inline">
+                            @csrf @method('DELETE')
+                            <button class="text-red-600 hover:underline" onclick="return confirm('Hapus invoice ini?')">Hapus</button>
+                        </form>
                         @endif
                     </td>
                 </tr>

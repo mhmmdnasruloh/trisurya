@@ -106,6 +106,10 @@ class QuotationController extends Controller
 
     public function edit(Quotation $quotation)
     {
+        if (!auth()->user()?->hasFullAccess()) {
+            abort(403, 'Hanya owner dan admin yang dapat mengedit quotation.');
+        }
+
         $quotation->load('items.product');
         $customers = Customer::orderBy('name')->get();
         $sales = User::where('role', 'Sales')->orderBy('fullname')->get();
@@ -115,6 +119,10 @@ class QuotationController extends Controller
 
     public function update(Request $request, Quotation $quotation)
     {
+        if (!auth()->user()?->hasFullAccess()) {
+            abort(403, 'Hanya owner dan admin yang dapat mengubah quotation.');
+        }
+
         $request->validate([
             'customer_id' => 'required',
             'sales_id' => 'required',
@@ -162,6 +170,10 @@ class QuotationController extends Controller
 
     public function destroy(Quotation $quotation)
     {
+        if (!auth()->user()?->isOwner()) {
+            abort(403, 'Hanya owner yang dapat menghapus quotation.');
+        }
+
         // Kembalikan stock saat quotation dihapus
         $quotation->load('items');
         $this->restoreStock($quotation);

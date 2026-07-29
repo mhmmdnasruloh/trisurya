@@ -17,11 +17,19 @@ class UserController extends Controller
 
     public function create()
     {
+        if (!auth()->user()?->isOwner()) {
+            abort(403, 'Hanya owner yang dapat menambah user.');
+        }
+
         return view('users.form');
     }
 
     public function store(Request $request)
     {
+        if (!auth()->user()?->isOwner()) {
+            abort(403, 'Hanya owner yang dapat menambah user.');
+        }
+
         $request->validate([
             'username' => 'required|unique:users',
             'password' => 'required|min:6',
@@ -38,11 +46,19 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        if (!auth()->user()?->isOwner()) {
+            abort(403, 'Hanya owner yang dapat mengedit user.');
+        }
+
         return view('users.form', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
+        if (!auth()->user()?->isOwner()) {
+            abort(403, 'Hanya owner yang dapat mengedit user.');
+        }
+
         $request->validate([
             'username' => ['required', Rule::unique('users')->ignore($user->id)],
             'fullname' => 'required',
@@ -60,6 +76,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        if (!auth()->user()?->isOwner()) {
+            abort(403, 'Hanya owner yang dapat menghapus user.');
+        }
+
         if ($user->id === auth()->id()) {
             return back()->withErrors(['message' => 'Tidak bisa menghapus akun Anda sendiri!']);
         }
