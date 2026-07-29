@@ -108,7 +108,7 @@
                 <svg class="w-5 h-5 {{ request()->routeIs('users.*') ? 'text-blue-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                Users Admin
+                User
             </a>
             @endif
         </div>
@@ -128,6 +128,7 @@
                 </button>
             </div>
 
+            @unless(request()->routeIs('users.*'))
             <form method="GET" action="{{ url()->current() }}" class="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full max-w-md hidden md:flex transition-shadow focus-within:ring-2 focus-within:ring-blue-100 focus-within:bg-white border border-transparent focus-within:border-blue-300 ml-4 lg:ml-0">
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -143,6 +144,7 @@
                 @endif
                 @endforeach
             </form>
+            @endunless
 
             <!-- Header Right Profile -->
             <div class="flex items-center gap-4 ml-auto">

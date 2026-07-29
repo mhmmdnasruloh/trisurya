@@ -2,18 +2,18 @@
 @section('content')
 <div class="bg-white rounded-lg shadow p-6">
     <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold text-gray-800">Manajemen Hak Akses (Users)</h2>
+        <h2 class="text-2xl font-bold text-gray-800">Manajemen User</h2>
         <a href="{{ route('users.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded shadow">
             + Tambah User
         </a>
     </div>
 
     @if ($errors->any())
-        <div class="bg-red-50 text-red-600 p-4 rounded mb-4">
-            <ul class="list-disc pl-4">
-                @foreach ($errors->all() as $err) <li>{{ $err }}</li> @endforeach
-            </ul>
-        </div>
+    <div class="bg-red-50 text-red-600 p-4 rounded mb-4">
+        <ul class="list-disc pl-4">
+            @foreach ($errors->all() as $err) <li>{{ $err }}</li> @endforeach
+        </ul>
+    </div>
     @endif
 
     <div class="overflow-x-auto">
@@ -37,10 +37,10 @@
                     <td class="py-3 px-4 text-center space-x-2">
                         <a href="{{ route('users.edit', $user->id) }}" class="text-blue-600 hover:underline">Edit Hak Akses</a>
                         @if(auth()->id() !== $user->id)
-                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button class="text-red-600 hover:underline" onclick="return confirm('Hapus user ini selamanya?')">Hapus</button>
-                            </form>
+                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline">
+                            @csrf @method('DELETE')
+                            <button class="text-red-600 hover:underline" onclick="return confirm('Hapus user ini selamanya?')">Hapus</button>
+                        </form>
                         @endif
                     </td>
                 </tr>
