@@ -39,6 +39,19 @@ class InvoiceController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('number', 'like', '%' . $search . '%')
+                  ->orWhereHas('quotation', function ($q2) use ($search) {
+                      $q2->where('number', 'like', '%' . $search . '%')
+                         ->orWhereHas('customer', function ($q3) use ($search) {
+                             $q3->where('name', 'like', '%' . $search . '%');
+                         });
+                  });
+            });
+        }
+
         $invoices = $query->paginate(20)->appends($request->except('page'));
         return view('invoices.index', compact('invoices'));
     }

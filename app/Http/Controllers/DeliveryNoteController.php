@@ -35,6 +35,20 @@ class DeliveryNoteController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('number', 'like', '%' . $search . '%')
+                  ->orWhere('status', 'like', '%' . $search . '%')
+                  ->orWhereHas('invoice', function ($q2) use ($search) {
+                      $q2->where('number', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('invoice.quotation.customer', function ($q2) use ($search) {
+                      $q2->where('name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
         $deliveryNotes = $query->paginate(20)->appends($request->except('page'));
         return view('delivery_notes.index', compact('deliveryNotes'));
     }

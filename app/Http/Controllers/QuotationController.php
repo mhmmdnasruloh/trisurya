@@ -40,6 +40,20 @@ class QuotationController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('number', 'like', '%' . $search . '%')
+                  ->orWhere('status', 'like', '%' . $search . '%')
+                  ->orWhereHas('customer', function ($q2) use ($search) {
+                      $q2->where('name', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('sales', function ($q2) use ($search) {
+                      $q2->where('fullname', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
         $quotations = $query->paginate(20)->appends($request->except('page'));
         return view('quotations.index', compact('quotations'));
     }
