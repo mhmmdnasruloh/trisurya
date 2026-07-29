@@ -2,7 +2,7 @@
 @section('content')
 <div class="space-y-8">
 
-    {{-- FILTER FORM --}}
+    {{-- FILTER  --}}
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
         <div class="flex items-center gap-3 mb-4">
             <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -54,24 +54,25 @@
 
     {{-- ACTIVE PERIOD INDICATOR --}}
     @php
-        $periodLabel = '';
-        if ($fromDate || $toDate) {
-            $periodLabel = ($fromDate ? date('d M Y', strtotime($fromDate)) : '...') . ' – ' . ($toDate ? date('d M Y', strtotime($toDate)) : '...');
-        } elseif ($month && $year) {
-            $bulanNames = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-            $periodLabel = ($bulanNames[(int)$month] ?? '') . ' ' . $year;
-        } elseif ($year) {
-            $periodLabel = 'Tahun ' . $year;
-        } elseif ($month) {
-            $bulanNames = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-            $periodLabel = $bulanNames[(int)$month] ?? '';
-        } else {
-            $periodLabel = 'Semua Periode';
-        }
+    $periodLabel = '';
+    if ($fromDate || $toDate) {
+    $periodLabel = ($fromDate ? date('d M Y', strtotime($fromDate)) : '...') . ' – ' . ($toDate ? date('d M Y', strtotime($toDate)) : '...');
+    } elseif ($month && $year) {
+    $bulanNames = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    $periodLabel = ($bulanNames[(int)$month] ?? '') . ' ' . $year;
+    } elseif ($year) {
+    $periodLabel = 'Tahun ' . $year;
+    } elseif ($month) {
+    $bulanNames = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    $periodLabel = $bulanNames[(int)$month] ?? '';
+    } else {
+    $periodLabel = 'Semua Periode';
+    }
     @endphp
     <div class="flex items-center gap-3 px-1">
         <span class="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 text-sm font-medium px-4 py-2 rounded-full">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
             Menampilkan data: <strong>{{ $periodLabel }}</strong>
         </span>
         @if($year == date('Y') && !$month && !$fromDate && !$toDate)
@@ -143,15 +144,13 @@
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
         {{-- Tab Buttons --}}
         <div class="flex border-b border-gray-200">
-            <button onclick="switchTab('dana-masuk')" id="tab-dana-masuk"
-                class="tab-btn flex-1 py-4 px-6 text-center font-semibold text-sm transition-all border-b-2 border-green-500 text-green-700 bg-green-50/50">
+            <button onclick="switchTab('dana-masuk')" id="tab-dana-masuk" class="tab-btn flex-1 py-4 px-6 text-center font-semibold text-sm transition-all border-b-2 border-green-500 text-green-700 bg-green-50/50">
                 <span class="flex items-center justify-center gap-2">
                     <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span>
                     Dana Masuk ({{ $incomes->count() }})
                 </span>
             </button>
-            <button onclick="switchTab('piutang')" id="tab-piutang"
-                class="tab-btn flex-1 py-4 px-6 text-center font-semibold text-sm transition-all border-b-2 border-transparent text-gray-500 hover:text-orange-600 hover:bg-orange-50/30">
+            <button onclick="switchTab('piutang')" id="tab-piutang" class="tab-btn flex-1 py-4 px-6 text-center font-semibold text-sm transition-all border-b-2 border-transparent text-gray-500 hover:text-orange-600 hover:bg-orange-50/30">
                 <span class="flex items-center justify-center gap-2">
                     <span class="w-2.5 h-2.5 bg-orange-500 rounded-full"></span>
                     Piutang ({{ $piutangs->count() }})
@@ -225,7 +224,7 @@
                             </td>
                             <td class="py-3 px-5">
                                 @php
-                                    $stsColor = strtoupper($inv->status) == 'DP' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800';
+                                $stsColor = strtoupper($inv->status) == 'DP' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800';
                                 @endphp
                                 <span class="px-2.5 py-1 text-xs rounded-full font-bold {{ $stsColor }}">{{ $inv->status }}</span>
                             </td>
@@ -254,41 +253,60 @@
 </div>
 
 <script>
-function switchTab(tab) {
-    // Hide all tab contents
-    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    
-    // Reset all tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-green-500', 'text-green-700', 'bg-green-50/50', 'border-orange-500', 'text-orange-700', 'bg-orange-50/50');
-        btn.classList.add('border-transparent', 'text-gray-500');
-    });
-    
-    // Show selected tab content
-    document.getElementById('content-' + tab).style.display = 'block';
-    
-    // Activate selected tab button
-    const activeBtn = document.getElementById('tab-' + tab);
-    activeBtn.classList.remove('border-transparent', 'text-gray-500');
-    
-    if (tab === 'dana-masuk') {
-        activeBtn.classList.add('border-green-500', 'text-green-700', 'bg-green-50/50');
-    } else {
-        activeBtn.classList.add('border-orange-500', 'text-orange-700', 'bg-orange-50/50');
+    function switchTab(tab) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+
+        // Reset all tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('border-green-500', 'text-green-700', 'bg-green-50/50', 'border-orange-500', 'text-orange-700', 'bg-orange-50/50');
+            btn.classList.add('border-transparent', 'text-gray-500');
+        });
+
+        // Show selected tab content
+        document.getElementById('content-' + tab).style.display = 'block';
+
+        // Activate selected tab button
+        const activeBtn = document.getElementById('tab-' + tab);
+        activeBtn.classList.remove('border-transparent', 'text-gray-500');
+
+        if (tab === 'dana-masuk') {
+            activeBtn.classList.add('border-green-500', 'text-green-700', 'bg-green-50/50');
+        } else {
+            activeBtn.classList.add('border-orange-500', 'text-orange-700', 'bg-orange-50/50');
+        }
     }
-}
+
 </script>
 
 <style>
     @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-    .space-y-8 > * {
+
+    .space-y-8>* {
         animation: fadeInUp 0.5s ease-out both;
     }
-    .space-y-8 > *:nth-child(1) { animation-delay: 0.05s; }
-    .space-y-8 > *:nth-child(2) { animation-delay: 0.15s; }
-    .space-y-8 > *:nth-child(3) { animation-delay: 0.25s; }
+
+    .space-y-8>*:nth-child(1) {
+        animation-delay: 0.05s;
+    }
+
+    .space-y-8>*:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+
+    .space-y-8>*:nth-child(3) {
+        animation-delay: 0.25s;
+    }
+
 </style>
 @endsection
