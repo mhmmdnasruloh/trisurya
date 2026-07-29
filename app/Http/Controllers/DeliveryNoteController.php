@@ -102,8 +102,8 @@ class DeliveryNoteController extends Controller
 
     public function destroy(DeliveryNote $deliveryNote)
     {
-        if (!auth()->user()?->isOwner()) {
-            abort(403, 'Hanya owner yang dapat menghapus delivery order.');
+        if (!auth()->user()?->isOwner() && !auth()->user()?->isAdmin()) {
+            abort(403, 'Hanya owner dan admin yang dapat menghapus delivery order.');
         }
 
         $deliveryNote->delete();

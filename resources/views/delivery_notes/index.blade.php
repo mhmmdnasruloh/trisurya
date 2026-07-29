@@ -55,7 +55,7 @@
                         <a href="{{ route('delivery_notes.edit', $dn->id) }}" class="text-blue-600 hover:underline">Edit</a>
                         @endif
 
-                        @if(auth()->user()->isOwner())
+                        @if(auth()->user()->isOwner() || auth()->user()->isAdmin())
                         <form action="{{ route('delivery_notes.destroy', $dn->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button class="text-red-600 hover:underline" onclick="return confirm('Hapus surat jalan ini?')">Hapus</button>

@@ -24,20 +24,22 @@ class DeliveriesExport implements FromCollection, WithHeadings, WithStyles
         $query = DeliveryNote::query();
 
         if ($this->year) {
-            $query->whereYear('delivery_date', $this->year);
+            $query->whereYear('date', $this->year);
         }
 
         if ($this->month) {
-            $query->whereMonth('delivery_date', $this->month);
+            $query->whereMonth('date', $this->month);
         }
 
         return $query->get()->map(function ($delivery) {
+            $customer = $delivery->invoice?->quotation?->customer;
+
             return [
                 'ID' => $delivery->number ?? $delivery->id,
-                'Customer' => $delivery->invoice->quotation->customer->name ?? '-',
-                'Address' => $delivery->address_specific ?? $delivery->invoice->quotation->customer->address ?? '-',
+                'Customer' => $customer?->name ?? '-',
+                'Address' => $delivery->shipping_address ?? $customer?->address ?? '-',
                 'Status' => $delivery->status ?? 'Draft',
-                'Delivery Date' => $delivery->delivery_date ? date('d-m-Y', strtotime($delivery->delivery_date)) : '-',
+                'Delivery Date' => $delivery->date ? date('d-m-Y', strtotime($delivery->date)) : '-',
                 'Nomor Kendaraan' => $delivery->vehicle_number ?? '-',
                 'Nama Driver' => $delivery->driver_name ?? '-',
             ];

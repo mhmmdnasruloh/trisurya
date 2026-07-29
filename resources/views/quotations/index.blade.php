@@ -64,7 +64,7 @@
                         <a href="{{ route('quotations.edit', $q->id) }}" class="text-blue-600 hover:underline">Edit</a>
                         @endif
 
-                        @if(auth()->user()->isOwner())
+                        @if(auth()->user()->isOwner() || auth()->user()->isAdmin())
                         <form action="{{ route('quotations.destroy', $q->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button class="text-red-600 hover:underline" onclick="return confirm('Hapus penawaran ini?')">Hapus</button>

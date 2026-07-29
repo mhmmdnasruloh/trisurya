@@ -170,8 +170,12 @@ class QuotationController extends Controller
 
     public function destroy(Quotation $quotation)
     {
-        if (!auth()->user()?->isOwner()) {
-            abort(403, 'Hanya owner yang dapat menghapus quotation.');
+        if (!auth()->user()?->isOwner() && !auth()->user()?->isAdmin()) {
+            abort(403, 'Hanya owner dan admin yang dapat menghapus quotation.');
+        }
+
+        if ($quotation->invoices()->exists()) {
+            return back()->with('error', 'Tidak bisa menghapus quotation karena sudah ada invoice yang terhubung. Hapus invoice terlebih dahulu.');
         }
 
         // Kembalikan stock saat quotation dihapus

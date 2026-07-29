@@ -113,16 +113,18 @@ class ReportController extends Controller
         $fileName = 'Laporan-Pengiriman-' . now()->format('d-m-Y-His') . '.xlsx';
         
         $query = DeliveryNote::query();
-        if (!empty($validated['year'])) $query->whereYear('delivery_date', $validated['year']);
-        if (!empty($validated['month'])) $query->whereMonth('delivery_date', $validated['month']);
+        if (!empty($validated['year'])) $query->whereYear('date', $validated['year']);
+        if (!empty($validated['month'])) $query->whereMonth('date', $validated['month']);
 
         return (new \Rap2hpoutre\FastExcel\FastExcel($query->get()))->download($fileName, function ($delivery) {
+            $customer = $delivery->invoice?->quotation?->customer;
+
             return [
                 'Nomor Surat Jalan' => $delivery->number ?? $delivery->id,
-                'Pelanggan' => $delivery->invoice->quotation->customer->name ?? '-',
-                'Alamat Pengiriman' => $delivery->address_specific ?? $delivery->invoice->quotation->customer->address ?? '-',
+                'Pelanggan' => $customer?->name ?? '-',
+                'Alamat Pengiriman' => $delivery->shipping_address ?? $customer?->address ?? '-',
                 'Status' => $delivery->status ?? 'Draft',
-                'Tanggal Pengiriman' => $delivery->delivery_date ? date('d-m-Y', strtotime($delivery->delivery_date)) : '-',
+                'Tanggal Pengiriman' => $delivery->date ? date('d-m-Y', strtotime($delivery->date)) : '-',
                 'Nomor Kendaraan' => $delivery->vehicle_number ?? '-',
                 'Nama Driver' => $delivery->driver_name ?? '-',
             ];
