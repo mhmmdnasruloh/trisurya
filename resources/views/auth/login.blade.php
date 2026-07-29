@@ -33,7 +33,7 @@
             <div class="relative z-10 mb-32 text-white">
                 <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight">Enterprise<br>Resource Planning<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200">Modernization.</span></h1>
                 <p class="text-lg text-blue-100 max-w-lg leading-relaxed font-light">
-                    Platform terpadu untuk mengelola Quotations, Invoices, Pemotongan Stok dan Laporan Keuangan dalam satu dashboard yang cepat, akurat, dan bersih.
+
                 </p>
             </div>
 
