@@ -54,6 +54,11 @@
             </div>
         </div>
 
+        <div class="mt-8 text-sm text-gray-600 border-t pt-4">
+            <p><strong>Dibuat:</strong> {{ $quotation->created_at ? $quotation->created_at->format('d M Y H:i') : '-' }} oleh {{ $quotation->createdBy->fullname ?? 'System' }}</p>
+            <p><strong>Terakhir diperbarui:</strong> {{ $quotation->updated_at ? $quotation->updated_at->format('d M Y H:i') : '-' }} oleh {{ $quotation->updatedBy->fullname ?? ($quotation->createdBy->fullname ?? 'System') }}</p>
+        </div>
+
         {{-- INFO --}}
         <div class="grid grid-cols-2 gap-8 mb-8">
             <div>
@@ -72,18 +77,7 @@
                         <td class="text-gray-500 pr-4 py-1">Tanggal</td>
                         <td class="font-medium text-gray-800">{{ date('d M Y', strtotime($quotation->date)) }}</td>
                     </tr>
-                    @if($quotation->created_at)
-                    <tr>
-                        <td class="text-gray-500 pr-4 py-1">Dibuat</td>
-                        <td class="font-medium text-gray-800">{{ date('d M Y H:i', strtotime($quotation->created_at)) }} oleh {{ $quotation->createdBy->fullname ?? '-' }}</td>
-                    </tr>
-                    @endif
-                    @if($quotation->updated_at)
-                    <tr>
-                        <td class="text-gray-500 pr-4 py-1">Diubah</td>
-                        <td class="font-medium text-gray-800">{{ date('d M Y H:i', strtotime($quotation->updated_at)) }} oleh {{ $quotation->updatedBy->fullname ?? '-' }}</td>
-                    </tr>
-                    @endif
+                    {{-- created/updated info moved to footer for printing consistency --}}
                     @if($quotation->approved_date)
                     <tr>
                         <td class="text-gray-500 pr-4 py-1">Tgl Approved</td>

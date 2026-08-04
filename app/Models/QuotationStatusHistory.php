@@ -10,6 +10,10 @@ class QuotationStatusHistory extends Model
     protected $guarded = [];
     public $timestamps = false;
 
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
+
     public function quotation()
     {
         return $this->belongsTo(Quotation::class);

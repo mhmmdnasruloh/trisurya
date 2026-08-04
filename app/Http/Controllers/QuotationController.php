@@ -136,6 +136,7 @@ class QuotationController extends Controller
 
         $quotation->load('items.product', 'createdBy', 'updatedBy');
         $statusHistories = $quotation->statusHistories()
+            ->with('user')
             ->latest('created_at')
             ->take(10)
             ->get()
