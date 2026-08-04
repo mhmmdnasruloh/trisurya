@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\DeliveryNote;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DeliveryNoteController extends Controller
 {
@@ -73,14 +74,17 @@ class DeliveryNoteController extends Controller
 
         $data = $request->except(['_token', '_method']);
         $data['number'] = $this->generateNumber();
+        $data['created_by'] = auth()->id();
         
-        DeliveryNote::create($data);
+        $deliveryNote = DeliveryNote::create($data);
+        Log::info(sprintf('[DeliveryNote] %s membuat delivery order %s untuk invoice %s', auth()->user()?->fullname ?? 'system', $deliveryNote->number, $deliveryNote->invoice_id));
         return redirect()->route('delivery_notes.index')->with('success', 'Surat Jalan berhasil dibuat.');
     }
 
     public function show(DeliveryNote $deliveryNote)
     {
-        $deliveryNote->load('invoice.quotation.customer', 'invoice.quotation.items.product');
+        $deliveryNote->load('invoice.quotation.customer', 'invoice.quotation.items.product', 'createdBy', 'updatedBy');
+        Log::info(sprintf('[DeliveryNote] %s membuka/cetak delivery order %s', auth()->user()?->fullname ?? 'system', $deliveryNote->number));
         return view('delivery_notes.print', compact('deliveryNote'));
     }
 
@@ -90,6 +94,7 @@ class DeliveryNoteController extends Controller
             abort(403, 'Hanya owner dan admin yang dapat mengedit delivery order.');
         }
 
+        $deliveryNote->load('createdBy', 'updatedBy');
         $invoices = Invoice::with('quotation.customer')
             ->orderBy('id', 'desc')
             ->orderBy('date', 'desc')
@@ -109,8 +114,10 @@ class DeliveryNoteController extends Controller
         ]);
 
         $data = $request->except(['_token', '_method', 'number']);
+        $data['updated_by'] = auth()->id();
 
         $deliveryNote->update($data);
+        Log::info(sprintf('[DeliveryNote] %s mengubah delivery order %s', auth()->user()?->fullname ?? 'system', $deliveryNote->number));
         return redirect()->route('delivery_notes.index')->with('success', 'Surat Jalan berhasil diupdate.');
     }
 
@@ -121,6 +128,7 @@ class DeliveryNoteController extends Controller
         }
 
         $deliveryNote->delete();
+        Log::info(sprintf('[DeliveryNote] %s menghapus delivery order %s', auth()->user()?->fullname ?? 'system', $deliveryNote->number));
         return back()->with('success', 'Surat Jalan berhasil dihapus.');
     }
 }

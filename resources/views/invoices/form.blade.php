@@ -46,6 +46,24 @@
             </div>
         </div>
 
+        @if($invoice->id)
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Riwayat Audit</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                <div>
+                    <p class="font-medium text-gray-800">Dibuat</p>
+                    <p>{{ $invoice->created_at ? $invoice->created_at->format('d M Y H:i') : '-' }}</p>
+                    <p class="text-gray-600">oleh {{ $invoice->createdBy->fullname ?? 'System' }}</p>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-800">Terakhir diperbarui</p>
+                    <p>{{ $invoice->updated_at ? $invoice->updated_at->format('d M Y H:i') : '-' }}</p>
+                    <p class="text-gray-600">oleh {{ $invoice->updatedBy->fullname ?? ($invoice->createdBy->fullname ?? 'System') }}</p>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <div class="border-t pt-6 flex justify-end space-x-4">
             <a href="{{ route('invoices.index') }}" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded font-medium">Batal</a>
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-medium shadow">Simpan Invoice</button>
@@ -65,6 +83,7 @@
             document.getElementById('invoiceDueDate').value = `${yyyy}-${mm}-${dd}`;
         }
     }
+
 </script>
 
 @endsection

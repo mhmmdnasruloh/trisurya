@@ -148,6 +148,11 @@
                 </div>
             </div>
         </div>
+
+        <div class="mt-8 text-sm text-gray-600 border-t pt-4">
+            <p><strong>Dibuat:</strong> {{ $deliveryNote->created_at ? $deliveryNote->created_at->format('d M Y H:i') : '-' }} oleh {{ $deliveryNote->createdBy->fullname ?? 'System' }}</p>
+            <p><strong>Terakhir diperbarui:</strong> {{ $deliveryNote->updated_at ? $deliveryNote->updated_at->format('d M Y H:i') : '-' }} oleh {{ $deliveryNote->updatedBy->fullname ?? ($deliveryNote->createdBy->fullname ?? 'System') }}</p>
+        </div>
     </div>
 </body>
 </html>

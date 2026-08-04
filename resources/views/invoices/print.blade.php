@@ -191,6 +191,11 @@
                 </div>
             </div>
         </div>
+
+        <div class="mt-8 text-sm text-gray-600 border-t pt-4">
+            <p><strong>Dibuat:</strong> {{ $invoice->created_at ? $invoice->created_at->format('d M Y H:i') : '-' }} oleh {{ $invoice->createdBy->fullname ?? 'System' }}</p>
+            <p><strong>Terakhir diperbarui:</strong> {{ $invoice->updated_at ? $invoice->updated_at->format('d M Y H:i') : '-' }} oleh {{ $invoice->updatedBy->fullname ?? ($invoice->createdBy->fullname ?? 'System') }}</p>
+        </div>
     </div>
 </body>
 </html>

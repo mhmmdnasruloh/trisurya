@@ -66,9 +66,12 @@
         <script>
             // Map invoice_id to customer address
             const invoiceAddressMap = {
-                @foreach($invoices as $inv)
-                    {{ $inv->id }}: "{{ addslashes($inv->quotation->customer->address ?? '') }}",
-                @endforeach
+                @foreach($invoices as $inv) {
+                    {
+                        $inv - > id
+                    }
+                }: "{{ addslashes($inv->quotation->customer->address ?? '') }}"
+                , @endforeach
             };
 
             function getSelectedCustomerAddress() {
@@ -104,6 +107,24 @@
             document.addEventListener('DOMContentLoaded', toggleAddressField);
 
         </script>
+
+        @if($deliveryNote->id)
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Riwayat Audit</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                <div>
+                    <p class="font-medium text-gray-800">Dibuat</p>
+                    <p>{{ $deliveryNote->created_at ? $deliveryNote->created_at->format('d M Y H:i') : '-' }}</p>
+                    <p class="text-gray-600">oleh {{ $deliveryNote->createdBy->fullname ?? 'System' }}</p>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-800">Terakhir diperbarui</p>
+                    <p>{{ $deliveryNote->updated_at ? $deliveryNote->updated_at->format('d M Y H:i') : '-' }}</p>
+                    <p class="text-gray-600">oleh {{ $deliveryNote->updatedBy->fullname ?? ($deliveryNote->createdBy->fullname ?? 'System') }}</p>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <div class="border-t pt-6 flex justify-end space-x-4">
             <a href="{{ route('delivery_notes.index') }}" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded font-medium">Batal</a>

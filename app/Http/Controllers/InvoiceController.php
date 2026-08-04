@@ -8,6 +8,7 @@ use App\Models\Cashflow;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceController extends Controller
 {
@@ -84,15 +85,18 @@ class InvoiceController extends Controller
         $data['total'] = $quotationTotal;
         $data['status'] = 'Belum Bayar';
         $data['paid_amount'] = 0;
+        $data['created_by'] = auth()->id();
         
-        Invoice::create($data);
+        $invoice = Invoice::create($data);
+        Log::info(sprintf('[Invoice] %s membuat invoice %s dari quotation %s', auth()->user()?->fullname ?? 'system', $invoice->number, $invoice->quotation?->number ?? $invoice->quotation_id));
 
         return redirect()->route('invoices.index')->with('success', 'Tagihan / Invoice berhasil dibuat.');
     }
 
     public function show(Invoice $invoice)
     {
-        $invoice->load('quotation.customer', 'quotation.items.product', 'quotation.sales', 'payments.createdBy');
+        $invoice->load('quotation.customer', 'quotation.items.product', 'quotation.sales', 'payments.createdBy', 'createdBy', 'updatedBy');
+        Log::info(sprintf('[Invoice] %s membuka/cetak invoice %s', auth()->user()?->fullname ?? 'system', $invoice->number));
         return view('invoices.print', compact('invoice'));
     }
 
@@ -102,6 +106,7 @@ class InvoiceController extends Controller
             abort(403, 'Hanya owner dan admin yang dapat mengedit invoice.');
         }
 
+        $invoice->load('createdBy', 'updatedBy');
         $quotations = Quotation::orderBy('id', 'desc')
             ->orderBy('date', 'desc')
             ->get();
@@ -123,11 +128,13 @@ class InvoiceController extends Controller
 
         $data = $request->except(['_token', '_method', 'number']);
         $data['non_vat'] = $request->has('non_vat') ? 1 : 0;
+        $data['updated_by'] = auth()->id();
 
         $quotation = Quotation::find($request->quotation_id);
         $data['total'] = $quotation ? $quotation->total : $invoice->total;
 
         $invoice->update($data);
+        Log::info(sprintf('[Invoice] %s mengubah invoice %s (status=%s, total=%s)', auth()->user()?->fullname ?? 'system', $invoice->number, $invoice->status, $invoice->total));
 
         return redirect()->route('invoices.index')->with('success', 'Tagihan / Invoice berhasil diubah.');
     }
@@ -143,7 +150,9 @@ class InvoiceController extends Controller
         // Tapi kita hapus cashflow yang terkait dengan invoice ini jika ada yang manual
         Cashflow::where('invoice_id', $invoice->id)->delete();
 
+        $invoiceNumber = $invoice->number;
         $invoice->delete();
+        Log::info(sprintf('[Invoice] %s menghapus invoice %s', auth()->user()?->fullname ?? 'system', $invoiceNumber));
         return back()->with('success', 'Invoice berhasil dihapus.');
     }
 }

@@ -29,7 +29,7 @@
             </div>
             <div>
                 <label class="block font-medium text-gray-700 text-sm mb-1">Status Penawaran*</label>
-                <select name="status" class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-300 outline-none bg-white" required>
+                <select id="statusInput" name="status" class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-300 outline-none bg-white" required>
                     <option value="Open" {{ old('status', $quotation->status) == 'Open' ? 'selected' : '' }}>Open</option>
                     <option value="Approved" {{ old('status', $quotation->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
                     <option value="Closed" {{ old('status', $quotation->status) == 'Closed' ? 'selected' : '' }}>Closed</option>
@@ -60,11 +60,11 @@
             <div class="col-span-1 md:col-span-3 flex flex-wrap gap-4">
                 <div>
                     <label class="block font-medium text-gray-700 text-sm mb-1">Tanggal Approved</label>
-                    <input type="date" name="approved_date" value="{{ old('approved_date', $quotation->approved_date) }}" class="w-64 border px-3 py-2 rounded focus:ring-2 focus:ring-blue-300 outline-none bg-white">
+                    <input id="approvedDateInput" type="date" name="approved_date" value="{{ old('approved_date', $quotation->approved_date) }}" class="w-64 border px-3 py-2 rounded focus:ring-2 focus:ring-blue-300 outline-none bg-white" {{ old('status', $quotation->status) !== 'Approved' ? 'disabled' : '' }}>
                 </div>
                 <div>
                     <label class="block font-medium text-gray-700 text-sm mb-1">Tanggal Closed</label>
-                    <input type="date" name="closed_date" value="{{ old('closed_date', $quotation->closed_date) }}" class="w-64 border px-3 py-2 rounded focus:ring-2 focus:ring-blue-300 outline-none bg-white">
+                    <input id="closedDateInput" type="date" name="closed_date" value="{{ old('closed_date', $quotation->closed_date) }}" class="w-64 border px-3 py-2 rounded focus:ring-2 focus:ring-blue-300 outline-none bg-white" {{ old('status', $quotation->status) !== 'Closed' ? 'disabled' : '' }}>
                 </div>
             </div>
         </div>
@@ -97,6 +97,38 @@
             </div>
         </div>
 
+        @if($quotation->id)
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Riwayat Audit</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                <div>
+                    <p class="font-medium text-gray-800">Dibuat</p>
+                    <p>{{ $quotation->created_at ? $quotation->created_at->format('d M Y H:i') : '-' }}</p>
+                    <p class="text-gray-600">oleh {{ $quotation->createdBy->fullname ?? 'System' }}</p>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-800">Terakhir diperbarui</p>
+                    <p>{{ $quotation->updated_at ? $quotation->updated_at->format('d M Y H:i') : '-' }}</p>
+                    <p class="text-gray-600">oleh {{ $quotation->updatedBy->fullname ?? ($quotation->createdBy->fullname ?? 'System') }}</p>
+                </div>
+            </div>
+        </div>
+
+        @if(isset($statusHistories) && $statusHistories->count())
+        <div class="bg-white border border-gray-200 rounded-lg p-5 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Riwayat Perubahan Status</h3>
+            <div class="space-y-3 text-sm text-gray-700">
+                @foreach($statusHistories as $history)
+                <div class="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                    <p class="font-medium text-gray-800">{{ $history->old_status ?? '—' }} → {{ $history->new_status }}</p>
+                    <p class="text-gray-600">{{ $history->created_at->format('d M Y H:i') }} oleh {{ $history->user->fullname ?? 'System' }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+        @endif
+
         <div class="border-t pt-6 flex justify-end space-x-4">
             <a href="{{ route('quotations.index') }}" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded font-medium">Batal</a>
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-medium shadow focus:ring focus:ring-blue-300">Konfirmasi Simpan</button>
@@ -106,7 +138,7 @@
 
 <script>
     const products = @json($products);
-    const existingItems = @json(old('items', $quotation->items ?? []));
+    const existingItems = @json(isset($existingItems) ? $existingItems : []);
 
     const tbody = document.getElementById('itemsBody');
     let rowIndex = 0;
@@ -139,8 +171,11 @@
             <option value="">-- Pilih Produk --</option>`;
         products.forEach(p => {
             const selected = (data.product_id == p.id) ? 'selected' : '';
-            const disabled = p.stock <= 0 ? 'disabled' : '';
-            const stockLabel = p.stock <= 0 ? ' (Stock Kosong)' : ` (Stock: ${p.stock})`;
+            const disabled = (p.stock <= 0 && data.product_id != p.id) ? 'disabled' : '';
+            let stockLabel = p.stock <= 0 ? ' (Stock Kosong)' : ` (Stock: ${p.stock})`;
+            if (p.stock <= 0 && data.product_id == p.id) {
+                stockLabel = ' (Stock: 0)';
+            }
             selectHtml += `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock}" ${selected} ${disabled}>${p.code} - ${p.name}${stockLabel}</option>`;
         });
         selectHtml += `</select>`;
@@ -176,6 +211,30 @@
     }
 
     document.getElementById('addRowBtn').addEventListener('click', () => addRow());
+
+    function updateDateFields() {
+        const status = document.getElementById('statusInput').value;
+        const approvedInput = document.getElementById('approvedDateInput');
+        const closedInput = document.getElementById('closedDateInput');
+
+        if (status === 'Approved') {
+            approvedInput.disabled = false;
+            closedInput.disabled = true;
+            closedInput.value = '';
+        } else if (status === 'Closed') {
+            approvedInput.disabled = true;
+            approvedInput.value = '';
+            closedInput.disabled = false;
+        } else {
+            approvedInput.disabled = true;
+            approvedInput.value = '';
+            closedInput.disabled = true;
+            closedInput.value = '';
+        }
+    }
+
+    document.getElementById('statusInput').addEventListener('change', updateDateFields);
+    updateDateFields();
 
     // Initialize existing rows
     if (existingItems.length > 0) {

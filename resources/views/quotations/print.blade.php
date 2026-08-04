@@ -7,12 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        @media print {
-            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .no-print { display: none !important; }
-            .print-page { box-shadow: none !important; margin: 0 !important; padding: 2rem !important; }
+        body {
+            font-family: 'Inter', sans-serif;
         }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 2rem !important;
+            }
+        }
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -27,7 +42,7 @@
             <div>
                 <div class="flex items-center gap-3 mb-2">
                     @if(file_exists(public_path('assets/logo.png')))
-                        <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="h-12">
+                    <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="h-12">
                     @endif
                     <h1 class="text-2xl font-bold text-gray-900">PT Trisurya<span class="text-blue-600">Solusindo</span></h1>
                 </div>
@@ -49,17 +64,50 @@
             </div>
             <div class="text-right">
                 <table class="ml-auto text-sm">
-                    <tr><td class="text-gray-500 pr-4 py-1">No. Quotation</td><td class="font-bold text-gray-800 font-mono">{{ $quotation->number }}</td></tr>
-                    <tr><td class="text-gray-500 pr-4 py-1">Tanggal</td><td class="font-medium text-gray-800">{{ date('d M Y', strtotime($quotation->date)) }}</td></tr>
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">No. Quotation</td>
+                        <td class="font-bold text-gray-800 font-mono">{{ $quotation->number }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">Tanggal</td>
+                        <td class="font-medium text-gray-800">{{ date('d M Y', strtotime($quotation->date)) }}</td>
+                    </tr>
+                    @if($quotation->created_at)
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">Dibuat</td>
+                        <td class="font-medium text-gray-800">{{ date('d M Y H:i', strtotime($quotation->created_at)) }} oleh {{ $quotation->createdBy->fullname ?? '-' }}</td>
+                    </tr>
+                    @endif
+                    @if($quotation->updated_at)
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">Diubah</td>
+                        <td class="font-medium text-gray-800">{{ date('d M Y H:i', strtotime($quotation->updated_at)) }} oleh {{ $quotation->updatedBy->fullname ?? '-' }}</td>
+                    </tr>
+                    @endif
                     @if($quotation->approved_date)
-                    <tr><td class="text-gray-500 pr-4 py-1">Tgl Approved</td><td class="font-medium text-gray-800">{{ date('d M Y', strtotime($quotation->approved_date)) }}</td></tr>
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">Tgl Approved</td>
+                        <td class="font-medium text-gray-800">{{ date('d M Y', strtotime($quotation->approved_date)) }}</td>
+                    </tr>
                     @endif
                     @if($quotation->closed_date)
-                    <tr><td class="text-gray-500 pr-4 py-1">Tgl Closed</td><td class="font-medium text-gray-800">{{ date('d M Y', strtotime($quotation->closed_date)) }}</td></tr>
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">Tgl Closed</td>
+                        <td class="font-medium text-gray-800">{{ date('d M Y', strtotime($quotation->closed_date)) }}</td>
+                    </tr>
                     @endif
-                    <tr><td class="text-gray-500 pr-4 py-1">Sales</td><td class="font-medium text-gray-800">{{ $quotation->sales->fullname ?? '-' }}</td></tr>
-                    <tr><td class="text-gray-500 pr-4 py-1">Termin</td><td class="font-medium text-gray-800">{{ $quotation->payment_term ?? '-' }}</td></tr>
-                    <tr><td class="text-gray-500 pr-4 py-1">Status</td><td class="font-bold {{ strtolower($quotation->status) == 'approved' ? 'text-green-600' : 'text-gray-800' }}">{{ $quotation->status }}</td></tr>
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">Sales</td>
+                        <td class="font-medium text-gray-800">{{ $quotation->sales->fullname ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">Termin</td>
+                        <td class="font-medium text-gray-800">{{ $quotation->payment_term ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-gray-500 pr-4 py-1">Status</td>
+                        <td class="font-bold {{ strtolower($quotation->status) == 'approved' ? 'text-green-600' : 'text-gray-800' }}">{{ $quotation->status }}</td>
+                    </tr>
                 </table>
             </div>
         </div>

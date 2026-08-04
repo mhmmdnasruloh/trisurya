@@ -3,13 +3,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model {
     protected $guarded = [];
-    public $timestamps = false;
+    public $timestamps = true;
 
     public function quotation() { return $this->belongsTo(Quotation::class); }
 
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     public function cashflows()
